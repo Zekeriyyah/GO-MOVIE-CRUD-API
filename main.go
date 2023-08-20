@@ -48,7 +48,43 @@ func deleteMovie(w http.ResponseWriter, r *http.Request) {
 	for index, item := range movies {
 		if item.Id == params["id"] {
 			movies = append(movies[:index], movies[index + 1:]...)
-			break
+			break 
+		}
+	}
+	json.NewEncoder(w).Encode(movies)
+}
+
+func createMovie(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	var movie Movie
+
+	err := json.NewDecoder(r.Body).Decode(&movie)
+	if err != nil {
+		log.Fatal(err)
+	}
+	movie.Id = strconv.Itoa(rand.Intn(1000000))
+	movies = append(movies, movie)
+
+	err = json.NewEncoder(w).Encode(movies)
+	if err != nil {
+		log.Printf("err: Movie encoding not successful....")
+	}
+}
+
+func updateMovie(w http.ResponseWriter, r *http.Request) {
+	json.Header().Set("Content-Type", "application/json")
+	
+	params := mux.Vars(r)
+	for index, item := range movies {
+		if item.Id == params["id"] {
+			movies = append(movies[:index], movies[index+1:])
+			var movie Movie
+			err := json.NewDecoder(r.Body).Decode(&movie)
+			if err != nil {
+				log.Fatal(err)
+			}
+			movies = append(movies, movie)
+			json.NewEncoder(w).Encode(movies)
 		}
 	}
 }
