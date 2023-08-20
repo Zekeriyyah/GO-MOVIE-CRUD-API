@@ -40,6 +40,7 @@ func getMovie(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	fmt.Fprint(w, "err 404: Not Found")
 }
 
 func deleteMovie(w http.ResponseWriter, r *http.Request) {
@@ -47,11 +48,14 @@ func deleteMovie(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	for index, item := range movies {
 		if item.Id == params["id"] {
-			movies = append(movies[:index], movies[index + 1:]...)
+			movies = append(movies[:index], movies[index+1:]...)
 			break 
 		}
 	}
-	json.NewEncoder(w).Encode(movies)
+	err := json.NewEncoder(w).Encode(movies)
+	if err != nil {
+		fmt.Fprint(w, "err: Encoding after deletion not successful")
+	}
 }
 
 func createMovie(w http.ResponseWriter, r *http.Request) {
@@ -102,8 +106,8 @@ func main() {
 	r.HandleFunc("/movies/{id}", updateMovie).Methods("PUT")
 	r.HandleFunc("/movies/{id}", deleteMovie).Methods("DELETE")
 
-	fmt.Println("Starting server at 8000......")
-	log.Fatal(http.ListenAndServe(":8000", r))
+	fmt.Println("Starting server at 8070......")
+	log.Fatal(http.ListenAndServe(":8070", r))
 
 
 
